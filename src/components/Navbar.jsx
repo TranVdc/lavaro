@@ -12,6 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 import ToggleColorMode from "./ToggleColorMode";
+import { Link } from "react-router-dom";
 
 const logoStyle = {
   width: "140px",
@@ -96,7 +97,7 @@ function Navbar({ mode, toggleColorMode }) {
                   sx={{ py: "6px", px: "12px" }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Features
+                    <Link to={"/"}>Home</Link>
                   </Typography>
                 </MenuItem>
                 <MenuItem
@@ -146,8 +147,7 @@ function Navbar({ mode, toggleColorMode }) {
                 variant="text"
                 size="small"
                 component="a"
-                href="/material-ui/getting-started/templates/sign-in/"
-                target="_blank"
+                href="/sign-in/"
               >
                 Sign in
               </Button>
