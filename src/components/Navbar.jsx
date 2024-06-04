@@ -20,7 +20,7 @@ const logoStyle = {
   cursor: "pointer",
 };
 
-function Navbar({ mode, toggleColorMode }) {
+function Navbar({ mode, toggleColorMode, token }) {
   const [open, setOpen] = useState(false);
 
   const toggleDrawer = (newOpen) => () => {
@@ -40,6 +40,7 @@ function Navbar({ mode, toggleColorMode }) {
       setOpen(false);
     }
   };
+  console.log(token);
 
   return (
     <div>
@@ -142,24 +143,39 @@ function Navbar({ mode, toggleColorMode }) {
               }}
             >
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
-              <Button
-                color="primary"
-                variant="text"
-                size="small"
-                component="a"
-                href="/sign-in/"
-              >
-                Sign in
-              </Button>
-              <Button
-                color="primary"
-                variant="contained"
-                size="small"
-                component="a"
-                href="/sign-up/"
-              >
-                Sign up
-              </Button>
+              {!token && (
+                <>
+                  <Button
+                    color="primary"
+                    variant="text"
+                    size="small"
+                    component="a"
+                    href="/sign-in/"
+                  >
+                    Sign in
+                  </Button>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    size="small"
+                    component="a"
+                    href="/sign-up/"
+                  >
+                    Sign up
+                  </Button>
+                </>
+              )}
+              {token && (
+                <Button
+                  color="primary"
+                  variant="contained"
+                  size="small"
+                  component="a"
+                  href="/sign-up/"
+                >
+                  Sign out
+                </Button>
+              )}
             </Box>
             <Box sx={{ display: { sm: "", md: "none" } }}>
               <Button
@@ -209,30 +225,49 @@ function Navbar({ mode, toggleColorMode }) {
                     FAQ
                   </MenuItem>
                   <Divider />
-                  <MenuItem>
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      component="a"
-                      href="/sign-up/"
-                      target="_blank"
-                      sx={{ width: "100%" }}
-                    >
-                      Sign up
-                    </Button>
-                  </MenuItem>
-                  <MenuItem>
-                    <Button
-                      color="primary"
-                      variant="outlined"
-                      component="a"
-                      href="/material-ui/getting-started/templates/sign-in/"
-                      target="_blank"
-                      sx={{ width: "100%" }}
-                    >
-                      Sign in
-                    </Button>
-                  </MenuItem>
+                  {!token && (
+                    <>
+                      {" "}
+                      <MenuItem>
+                        <Button
+                          color="primary"
+                          variant="contained"
+                          component="a"
+                          href="/sign-up/"
+                          target="_blank"
+                          sx={{ width: "100%" }}
+                        >
+                          Sign up
+                        </Button>
+                      </MenuItem>
+                      <MenuItem>
+                        <Button
+                          color="primary"
+                          variant="outlined"
+                          component="a"
+                          href="/material-ui/getting-started/templates/sign-in/"
+                          target="_blank"
+                          sx={{ width: "100%" }}
+                        >
+                          Sign in
+                        </Button>
+                      </MenuItem>
+                    </>
+                  )}
+                  {token && (
+                    <MenuItem>
+                      <Button
+                        color="primary"
+                        variant="outlined"
+                        component="a"
+                        href="/material-ui/getting-started/templates/sign-in/"
+                        target="_blank"
+                        sx={{ width: "100%" }}
+                      >
+                        Sign out
+                      </Button>
+                    </MenuItem>
+                  )}
                 </Box>
               </Drawer>
             </Box>
@@ -245,7 +280,7 @@ function Navbar({ mode, toggleColorMode }) {
 
 Navbar.propTypes = {
   mode: PropTypes.oneOf(["dark", "light"]).isRequired,
-  toggleColorMode: PropTypes.func.isRequired,
+  toggleColorMode: PropTypes.func,
 };
 
 export default Navbar;

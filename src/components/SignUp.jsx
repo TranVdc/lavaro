@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -20,8 +20,9 @@ import {
   RouterProvider,
   Route,
   Routes,
-  unstable_useViewTransitionState,
 } from "react-router-dom";
+import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function Copyright(props) {
   return (
@@ -49,20 +50,56 @@ export default function SignUp() {
   const {
     register,
     control,
+    watch,
     handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
       firstName: "",
       lastName: "",
+      email: "",
+      password: "",
     },
   });
   const [isSignupSucess, setIsSignUpSucess] = useState(false);
-  const onSubmit = (data) => {
-    localStorage.setItem("Name", data.firstName);
-    setIsSignUpSucess(true);
+  const [isLoadingSpiner, setIsLoadingSpiner] = useState(false);
+  const [isUniqueEmail, setIsUniqueEmail] = useState(false);
+
+  const watchEmail = watch("email", "");
+  useEffect(() => {
+    if (isLoadingSpiner === false) {
+      setIsUniqueEmail(false);
+    }
+  }, [watchEmail]);
+  const onSubmit = async (data) => {
+    try {
+      setIsLoadingSpiner(true);
+      const isUniqueEmailRespone = await axios.get(
+        `http://127.0.0.1:8000/api/lavaro-users/search-by-email/${data.email}`
+      );
+
+      if (isUniqueEmailRespone.data.status === 1) {
+        setIsUniqueEmail(true);
+        setIsLoadingSpiner(false);
+        return false;
+      }
+
+      const respone = await axios.post(
+        "http://127.0.0.1:8000/api/lavaro-users/store/",
+        {
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          password: data.password,
+          role: "student",
+        }
+      );
+      setIsSignUpSucess(true);
+      setIsLoadingSpiner(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
-  console.log(errors);
   return (
     <ThemeProvider theme={defaultTheme}>
       {isSignupSucess ? (
@@ -103,9 +140,16 @@ export default function SignUp() {
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
               <LockOutlinedIcon />
             </Avatar>
+
             <Typography component="h1" variant="h5">
               Sign up
             </Typography>
+            {isLoadingSpiner && (
+              <Box sx={{ display: "flex" }}>
+                <CircularProgress color="secondary" />
+              </Box>
+            )}
+
             <form onSubmit={handleSubmit(onSubmit)}>
               <Box noValidate sx={{ mt: 3 }}>
                 <Grid container spacing={2}>
@@ -120,13 +164,15 @@ export default function SignUp() {
                           autoComplete="given-name"
                           fullWidth
                           id="firstName"
-                          label="First Name"
+                          label="First Name *"
                           autoFocus
                         />
                       )}
                     />
                     {errors.firstName?.message && (
-                      <Alert severity="error">{errors.email?.message}</Alert>
+                      <Alert severity="error">
+                        {errors.firstName?.message}
+                      </Alert>
                     )}
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -139,32 +185,43 @@ export default function SignUp() {
                           {...field}
                           fullWidth
                           id="lastName"
-                          label="Last Name"
+                          label="Last Name *"
                           autoComplete="family-name"
                         />
                       )}
                     />
                     {errors.lastName?.message && (
-                      <Alert severity="error">{errors.email?.message}</Alert>
+                      <Alert severity="error">{errors.lastName?.message}</Alert>
                     )}
                   </Grid>
                   <Grid item xs={12}>
                     <Controller
                       name="email"
                       control={control}
-                      rules={{ required: "Email is required" }}
+                      rules={{
+                        required: "Email is required",
+                        pattern: {
+                          value: /\S+@\S+\.\S+/,
+                          message: "Entered value does not match email format",
+                        },
+                      }}
                       render={({ field }) => (
                         <TextField
                           {...field}
                           autoComplete="email"
                           fullWidth
                           id="email"
-                          label="Email Address"
+                          label="Email Address *"
                         />
                       )}
                     />
                     {errors.email?.message && (
                       <Alert severity="error">{errors.email?.message}</Alert>
+                    )}
+                    {isUniqueEmail && (
+                      <Alert severity="error">
+                        This Email is exsting already
+                      </Alert>
                     )}
                   </Grid>
                   <Grid item xs={12}>
@@ -177,8 +234,9 @@ export default function SignUp() {
                           {...field}
                           autoComplete="password"
                           fullWidth
+                          type="password"
                           id="password"
-                          label="Password"
+                          label="Password *"
                         />
                       )}
                     />

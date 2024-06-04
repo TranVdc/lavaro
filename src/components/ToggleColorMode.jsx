@@ -28,8 +28,8 @@ function ToggleColorMode({ mode, toggleColorMode }) {
 }
 
 ToggleColorMode.propTypes = {
-  mode: PropTypes.oneOf(["dark", "light"]).isRequired,
-  toggleColorMode: PropTypes.func.isRequired,
+  mode: PropTypes.oneOf(["dark", "light"]),
+  toggleColorMode: PropTypes.func,
 };
 
 export default ToggleColorMode;
