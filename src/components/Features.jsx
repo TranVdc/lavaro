@@ -12,48 +12,81 @@ import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import DevicesRoundedIcon from "@mui/icons-material/DevicesRounded";
 import EdgesensorHighRoundedIcon from "@mui/icons-material/EdgesensorHighRounded";
 import ViewQuiltRoundedIcon from "@mui/icons-material/ViewQuiltRounded";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
-const items = [
-  {
-    icon: <ViewQuiltRoundedIcon />,
-    title: "Dashboard",
-    description:
-      "This item could provide a snapshot of the most important metrics or data points related to the product.",
-    imageLight:
-      'url("https://mui.com/static/images/templates/templates-images/dash-light.png")',
-    imageDark:
-      'url("https://mui.com/static/images/templates/templates-images/dash-dark.png")',
-  },
-  {
-    icon: <EdgesensorHighRoundedIcon />,
-    title: "Mobile integration",
-    description:
-      "This item could provide information about the mobile app version of the product.",
-    imageLight:
-      'url("https://mui.com/static/images/templates/templates-images/mobile-light.png")',
-    imageDark:
-      'url("https://mui.com/static/images/templates/templates-images/mobile-dark.png")',
-  },
-  {
-    icon: <DevicesRoundedIcon />,
-    title: "Available on all platforms",
-    description:
-      "This item could let users know the product is available on all platforms, such as web, mobile, and desktop.",
-    imageLight:
-      'url("https://mui.com/static/images/templates/templates-images/devices-light.png")',
-    imageDark:
-      'url("https://mui.com/static/images/templates/templates-images/devices-dark.png")',
-  },
-];
+// const items = [
+//   {
+//     icon: <ViewQuiltRoundedIcon />,
+//     title: "Dashboard",
+//     description:
+//       "This item could provide a snapshot of the most important metrics or data points related to the product.",
+//     imageLight:
+//       'url("https://mui.com/static/images/templates/templates-images/dash-light.png")',
+//     imageDark:
+//       'url("https://mui.com/static/images/templates/templates-images/dash-dark.png")',
+//   },
+//   {
+//     icon: <EdgesensorHighRoundedIcon />,
+//     title: "Mobile integration",
+//     description:
+//       "This item could provide information about the mobile app version of the product.",
+//     imageLight:
+//       'url("https://mui.com/static/images/templates/templates-images/mobile-light.png")',
+//     imageDark:
+//       'url("https://mui.com/static/images/templates/templates-images/mobile-dark.png")',
+//   },
+//   {
+//     icon: <DevicesRoundedIcon />,
+//     title: "Available on all platforms",
+//     description:
+//       "This item could let users know the product is available on all platforms, such as web, mobile, and desktop.",
+//     imageLight:
+//       'url("https://mui.com/static/images/templates/templates-images/devices-light.png")',
+//     imageDark:
+//       'url("https://mui.com/static/images/templates/templates-images/devices-dark.png")',
+//   },
+// ];
 
 export default function Features() {
-  const [selectedItemIndex, setSelectedItemIndex] = React.useState(0);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  const [courses, setCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleItemClick = (index) => {
     setSelectedItemIndex(index);
   };
 
-  const selectedFeature = items[selectedItemIndex];
+  useEffect(() => {
+    async function loadCourse() {
+      const coursesData = await axios.get(
+        `http://127.0.0.1:8000/api/lavaro-courses/get-course-with-limit/3`
+      );
+      console.log(11);
+
+      setCourses(coursesData.data.data);
+      setIsLoading(false);
+      console.log(courses);
+      console.log(222);
+    }
+    loadCourse();
+  }, []);
+
+  const selectedFeature = courses[selectedItemIndex];
+  if (isLoading) {
+    return (
+      <Container id="features" sx={{ py: { xs: 8, sm: 16 } }}>
+        <Grid container spacing={12}>
+          <Grid item xs={12} md={12}>
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <CircularProgress />
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+    );
+  }
 
   return (
     <Container id="features" sx={{ py: { xs: 8, sm: 16 } }}>
@@ -77,7 +110,7 @@ export default function Features() {
             gap={1}
             sx={{ display: { xs: "auto", sm: "none" } }}
           >
-            {items.map(({ title }, index) => (
+            {courses.map(({ title }, index) => (
               <Chip
                 key={index}
                 label={title}
@@ -114,10 +147,7 @@ export default function Features() {
           >
             <Box
               sx={{
-                backgroundImage: (theme) =>
-                  theme.palette.mode === "light"
-                    ? items[selectedItemIndex].imageLight
-                    : items[selectedItemIndex].imageDark,
+                backgroundImage: courses[selectedItemIndex].image,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 minHeight: 280,
@@ -129,14 +159,14 @@ export default function Features() {
                 variant="body2"
                 fontWeight="bold"
               >
-                {selectedFeature.title}
+                {/* {selectedFeature.title} */}
               </Typography>
               <Typography
                 color="text.secondary"
                 variant="body2"
                 sx={{ my: 0.5 }}
               >
-                {selectedFeature.description}
+                {/* {selectedFeature.title} */}
               </Typography>
               <Link
                 color="primary"
@@ -165,7 +195,7 @@ export default function Features() {
             useFlexGap
             sx={{ width: "100%", display: { xs: "none", sm: "flex" } }}
           >
-            {items.map(({ icon, title, description }, index) => (
+            {courses.map(({ image, title, subtitle }, index) => (
               <Card
                 key={index}
                 variant="outlined"
@@ -214,7 +244,7 @@ export default function Features() {
                       },
                     }}
                   >
-                    {icon}
+                    <EdgesensorHighRoundedIcon />
                   </Box>
                   <Box sx={{ textTransform: "none" }}>
                     <Typography
@@ -229,7 +259,7 @@ export default function Features() {
                       variant="body2"
                       sx={{ my: 0.5 }}
                     >
-                      {description}
+                      {subtitle}
                     </Typography>
                     <Link
                       color="primary"
@@ -278,12 +308,11 @@ export default function Features() {
                 width: 420,
                 height: 500,
                 backgroundSize: "contain",
-                backgroundImage: (theme) =>
-                  theme.palette.mode === "light"
-                    ? items[selectedItemIndex].imageLight
-                    : items[selectedItemIndex].imageDark,
+                backgroundImage: `url(${courses[selectedItemIndex].image})`,
               }}
-            />
+            >
+              {courses[selectedItemIndex].content}
+            </Box>
           </Card>
         </Grid>
       </Grid>

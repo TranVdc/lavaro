@@ -171,7 +171,7 @@ function Navbar({ mode, toggleColorMode, token }) {
                   variant="contained"
                   size="small"
                   component="a"
-                  href="/sign-up/"
+                  href="/logout/"
                 >
                   Sign out
                 </Button>

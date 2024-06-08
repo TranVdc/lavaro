@@ -15,6 +15,7 @@ import {
   Link,
 } from "react-router-dom";
 import UseToken from "./components/UseToken";
+import Logout from "./components/Logout";
 
 function App() {
   const [mode, setMode] = useState("light");
@@ -86,6 +87,20 @@ function App() {
                 token={token}
               />{" "}
               <Dashboard token={token} />
+            </>
+          }
+        />
+
+        <Route
+          path="/logout"
+          element={
+            <>
+              <Navbar
+                mode={mode}
+                toggleColorMosde={toggleColorMode}
+                token={token}
+              />{" "}
+              <Logout setToken={setToken} />
             </>
           }
         />

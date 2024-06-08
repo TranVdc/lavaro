@@ -129,7 +129,6 @@ export default function SignIn({ setToken }) {
                     label="Password Address *"
                     type="password"
                     margin="normal"
-                    autoFocus
                   />
                 )}
               />
